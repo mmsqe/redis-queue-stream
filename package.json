@@ -1,5 +1,5 @@
 {
-  "name": "redis-queue-stream",
+  "name": "@crypto.com/redis-queue-stream",
   "version": "1.2.0",
   "description": "a message queue by redis streams",
   "main": "built/index.js",
