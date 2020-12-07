@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RedisQueues = void 0;
 const Ioredis = require("ioredis");
 const assert = require("assert");
 const util_1 = require("./util");

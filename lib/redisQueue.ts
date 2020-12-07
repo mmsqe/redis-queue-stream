@@ -157,6 +157,9 @@ export class RedisQueue extends RedisQueues {
 
     const { Client } = this;
     try {
+      if (!this.streams[queueName]) {
+        await this.Init(queueName);
+      }
       const pendingInfo = await Client.xpending(queueName, this.groupName);
       return pendingInfo;
     } catch (error) {
@@ -195,7 +198,7 @@ export class RedisQueue extends RedisQueues {
     const { Client } = this;
     try {
       if (!this.streams[queueName]) {
-        this.Init(queueName);
+        await this.Init(queueName);
       }
       const subInfo = await Client.xreadgroup('group', this.groupName, this.consumerName, 'count', count, 'streams', queueName, '>');
       if (!subInfo) {

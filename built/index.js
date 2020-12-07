@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MulitRedis = exports.RedisQueue = void 0;
 const redisQueue_1 = require("./lib/redisQueue");
-exports.RedisQueue = redisQueue_1.RedisQueue;
+Object.defineProperty(exports, "RedisQueue", { enumerable: true, get: function () { return redisQueue_1.RedisQueue; } });
 const mulitRedis_1 = require("./lib/mulitRedis");
-exports.MulitRedis = mulitRedis_1.MulitRedis;
+Object.defineProperty(exports, "MulitRedis", { enumerable: true, get: function () { return mulitRedis_1.MulitRedis; } });
