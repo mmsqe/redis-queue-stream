@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MulitRedis = void 0;
 const redisQueue_1 = require("./redisQueue");
 class MulitRedis {
     constructor(config, options) {

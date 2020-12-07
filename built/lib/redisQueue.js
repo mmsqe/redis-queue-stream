@@ -1,13 +1,15 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RedisQueue = void 0;
 const assert = require("assert");
 const os = require("os");
 const events = require("events");
@@ -150,6 +152,9 @@ class RedisQueue extends redis_1.RedisQueues {
             assert(this.queueNames.has(queueName), `not defined queueName:${queueName}`);
             const { Client } = this;
             try {
+                if (!this.streams[queueName]) {
+                    yield this.Init(queueName);
+                }
                 const pendingInfo = yield Client.xpending(queueName, this.groupName);
                 return pendingInfo;
             }
@@ -192,7 +197,7 @@ class RedisQueue extends redis_1.RedisQueues {
             const { Client } = this;
             try {
                 if (!this.streams[queueName]) {
-                    this.Init(queueName);
+                    yield this.Init(queueName);
                 }
                 const subInfo = yield Client.xreadgroup('group', this.groupName, this.consumerName, 'count', count, 'streams', queueName, '>');
                 if (!subInfo) {

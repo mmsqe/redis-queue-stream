@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.convertObjectToArray = exports.isObject = exports.objectToString = void 0;
 exports.objectToString = (obj) => Object.prototype.toString.call(obj);
 /**
  * 判断数据类型是否为Object
