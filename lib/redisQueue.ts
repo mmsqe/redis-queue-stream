@@ -61,13 +61,17 @@ export class RedisQueue extends RedisQueues {
    */
   async Init(streamName: string) {
     const { Client } = this;
+    const key = `${streamName}_${this.groupName}`;
+    if (!this.streams[key]) {
+      return;
+    }
     try {
-      const key: number = await Client.exists(streamName);
-      // 判断redis中是否已经创建该stream
-      if (key === 0) {
+      const exist = await Client.xinfo('consumers', streamName, this.groupName);
+      // 判断redis中是否已经创建该stream with group
+      if (!exist) {
         await Client.xgroup('create', streamName, this.groupName, 0, 'mkstream');
       }
-      this.streams[streamName] = true;
+      this.streams[key] = true;
     } catch (error) {
       console.log('streamInit error:', error);
     }
@@ -157,9 +161,7 @@ export class RedisQueue extends RedisQueues {
 
     const { Client } = this;
     try {
-      if (!this.streams[queueName]) {
-        await this.Init(queueName);
-      }
+      await this.Init(queueName);
       const pendingInfo = await Client.xpending(queueName, this.groupName);
       return pendingInfo;
     } catch (error) {
@@ -178,9 +180,7 @@ export class RedisQueue extends RedisQueues {
     assert(Object.prototype.toString.call(message) === '[object Object]', 'the type of message  must be object');
     assert(Object.keys(message).length > 0, 'message is require');
     try {
-      if (!this.streams[queueName]) {
-        await this.Init(queueName);
-      }
+      await this.Init(queueName);
       const streamId = await Client.xadd(queueName, 'maxlen', this.maxlen, '*', message);
       return streamId;
     } catch (error) {
@@ -197,9 +197,7 @@ export class RedisQueue extends RedisQueues {
     assert(this.queueNames.has(queueName), `not defined queueName:${queueName}`);
     const { Client } = this;
     try {
-      if (!this.streams[queueName]) {
-        await this.Init(queueName);
-      }
+      await this.Init(queueName);
       const subInfo = await Client.xreadgroup('group', this.groupName, this.consumerName, 'count', count, 'streams', queueName, '>');
       if (!subInfo) {
         return null;
